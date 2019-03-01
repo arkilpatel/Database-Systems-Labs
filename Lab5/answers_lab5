@@ -1,0 +1,120 @@
+1)
+mysql> SELECT CASE  WHEN DATE LIKE '%-01-%' THEN 'JANUARY'  WHEN DATE LIKE '%-02-%' THEN 'FEBRUARY' WHEN DATE LIKE '%-03-%' THEN 'MARCH' WHEN DATE LIKE '%-04-%' THEN 'APRIL' WHEN DATE LIKE '%-05-%' THEN 'MAY' WHEN DATE LIKE '%-06-%' THEN 'JUNE' WHEN DATE LIKE '%-07-%' THEN 'JULY' WHEN DATE LIKE '%-08-%' THEN 'AUGUST' WHEN DATE LIKE '%-09-%' THEN 'SEPTEMBER' WHEN DATE LIKE '%-10-%' THEN 'OCTOBER' WHEN DATE LIKE '%-11-%' THEN 'NOVEMBER' WHEN DATE LIKE '%-12-%' THEN 'DECEMBER' END AS MONTH, SUM(AMOUNT) AS TOTAL_AMOUNT FROM PAYMENT GROUP BY MONTH;
++---------+--------------+
+| MONTH   | TOTAL_AMOUNT |
++---------+--------------+
+| APRIL   |         8000 |
+| JANUARY |      2080428 |
+| MARCH   |        10000 |
+| OCTOBER |      1053714 |
++---------+--------------+
+4 rows in set, 12 warnings (0.06 sec)
+
+2)
+SELECT P1.P_NO,P1.DATE,P2.DATE,DATEDIFF(P2.DATE,P1.DATE) AS DATE_DIFF, CASE  WHEN (DATEDIFF(P2.DATE,P1.DATE)/365)<=1 THEN 'FIRST YEAR' WHEN (DATEDIFF(P2.DATE,P1.DATE)/365)>1 AND (DATEDIFF(P2.DATE,P1.DATE)/365)<=2 THEN 'SECOND YEAR' WHEN (DATEDIFF(P2.DATE,P1.DATE)/365)>2 AND (DATEDIFF(P2.DATE,P1.DATE)/365)<=3 THEN 'THIRD YEAR' ELSE 'Defaulter' END AS FLAG FROM PAYMENT AS P1 INNER JOIN PAYMENT AS P2 ON P1.P_NO = P2.P_NO WHERE P1.DATE<P2.DATE ORDER BY FLAG;
++------+------------+------------+-----------+-------------+
+| P_NO | DATE       | DATE       | DATE_DIFF | FLAG        |
++------+------------+------------+-----------+-------------+
+| p2   | 2000-01-09 | 2012-03-11 |      4445 | Defaulter   |
+| p2   | 2000-01-09 | 2011-10-09 |      4291 | Defaulter   |
+| p1   | 2012-04-11 | 2012-10-25 |       197 | FIRST YEAR  |
+| p1   | 2011-01-09 | 2011-10-11 |       275 | FIRST YEAR  |
+| p1   | 2011-10-11 | 2012-04-11 |       183 | FIRST YEAR  |
+| p1   | 2011-01-09 | 2011-10-08 |       272 | FIRST YEAR  |
+| p1   | 2011-10-08 | 2011-10-11 |         3 | FIRST YEAR  |
+| p2   | 2011-10-09 | 2012-03-11 |       154 | FIRST YEAR  |
+| p1   | 2011-03-11 | 2011-10-08 |       211 | FIRST YEAR  |
+| p1   | 2011-03-11 | 2011-10-11 |       214 | FIRST YEAR  |
+| p1   | 2011-01-09 | 2011-03-11 |        61 | FIRST YEAR  |
+| p1   | 2011-10-08 | 2012-04-11 |       186 | FIRST YEAR  |
+| p1   | 2011-01-09 | 2012-10-25 |       655 | SECOND YEAR |
+| p1   | 2011-10-08 | 2012-10-25 |       383 | SECOND YEAR |
+| p1   | 2011-03-11 | 2012-04-11 |       397 | SECOND YEAR |
+| p1   | 2011-10-11 | 2012-10-25 |       380 | SECOND YEAR |
+| p1   | 2011-01-09 | 2012-04-11 |       458 | SECOND YEAR |
+| p1   | 2011-03-11 | 2012-10-25 |       594 | SECOND YEAR |
++------+------------+------------+-----------+-------------+
+18 rows in set (0.00 sec)
+
+3)
+mysql> CREATE VIEW V1 AS SELECT BR_NAME,SUM(BALANCE) AS TOT_AMOUNT,CASE WHEN SUM(BALANCE)>=10000 THEN '1' WHEN SUM(BALANCE)>=8000 AND SUM(BALANCE)<10000 THEN '2' WHEN SUM(BALANCE)>=7000 AND SUM(BALANCE)<8000 THEN '3' ELSE '4' END AS RANK FROM ACCOUNT_COPY GROUP BY BR_NAME;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> SELECT * FROM V1;
++---------+------------+------+
+| BR_NAME | TOT_AMOUNT | RANK |
++---------+------------+------+
+| zone1   |      13000 | 1    |
+| zone2   |      10000 | 1    |
+| zone3   |       6000 | 4    |
+| zone4   |      10000 | 1    |
+| zone6   |       6000 | 4    |
+| zone7   |       9000 | 2    |
+| zone8   |       8000 | 2    |
+| zone9   |       7000 | 3    |
++---------+------------+------+
+8 rows in set (0.00 sec)
+
+4)
+A)
+mysql> CREATE VIEW GOODSALESMAN AS SELECT O.SALESMANID,O.CUSTOMERID,T1.AMOUNT FROM (SELECT ORD_DATE,MAX(AMOUNT) AS AMOUNT FROM ORDERS GROUP BY ORD_DATE) AS T1 INNER JOIN ORDERS AS O ON T1.AMOUNT = O.AMOUNT;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> SELECT * FROM GOODSALESMAN;
++------------+------------+--------+
+| SALESMANID | CUSTOMERID | AMOUNT |
++------------+------------+--------+
+|       5002 |       3005 |  150.5 |
+|       5003 |       3009 |  110.5 |
+|       5001 |       3007 | 2400.6 |
+|       5001 |       3002 |   5760 |
+|       5003 |       3009 | 2480.4 |
+|       5002 |       3008 | 250.45 |
+|       5001 |       3002 | 3045.6 |
++------------+------------+--------+
+7 rows in set (0.00 sec)
+
+B)
+mysql> CREATE VIEW GREATSALESMAN AS SELECT T2.SALESMANID,COUNT(*) FROM (SELECT O.SALESMANID,O.CUSTOMERID,T1.AMOUNT FROM (SELECT ORD_DATE,MAX(AMOUNT) AS AMOUNT FROM ORDERS GROUP BY ORD_DATE) AS T1 INNER JOIN ORDERS AS O ON T1.AMOUNT = O.AMOUNT) AS T2 GROUP BY T2.SALESMANID HAVING COUNT(*)>=3;
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> SELECT * FROM GREATSALESMAN;
++------------+----------+
+| SALESMANID | COUNT(*) |
++------------+----------+
+|       5001 |        3 |
++------------+----------+
+1 row in set (0.00 sec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

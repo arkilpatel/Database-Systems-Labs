@@ -1,0 +1,52 @@
+1)
+mysql> SELECT DISTINCT T4.NAME,T4.CUST_ID,D.AC_NO,T4.AMOUNT FROM DEPOSITOR AS D INNER JOIN (SELECT T3.CUST_ID,T3.NAME,SUM(L.AMOUNT) AS AMOUNT FROM LOAN AS L INNER JOIN (SELECT B.LOAN_NO,T2.CUST_ID,T2.NAME FROM BORROWER AS B INNER JOIN (SELECT B.CUST_ID,T1.NAME FROM BORROWER AS B INNER JOIN (SELECT C.C_ID,C.NAME FROM CUSTOMER AS C WHERE C.GENDER='f') AS T1 ON B.CUST_ID = T1.C_ID GROUP BY B.CUST_ID HAVING COUNT(*)=3) AS T2 ON B.CUST_ID=T2.CUST_ID) AS T3 ON L.LN_NO=T3.LOAN_NO GROUP BY T3.CUST_ID) AS T4 ON D.CUST_ID=T4.CUST_ID;
++----------+---------+-------------+----------+
+| NAME     | CUST_ID | AC_NO       | AMOUNT   |
++----------+---------+-------------+----------+
+| haritha  | c1      | 20012023094 |  7000000 |
+| sachitra | c5      | 20012033046 | 22000000 |
++----------+---------+-------------+----------+
+2 rows in set (0.00 sec)
+
+2)
+mysql> SELECT T3.PAYMENT_NUMBER,T3.DATE1,T3.DATE2,T3.DATE_DIFF,P1.AMOUNT FROM (SELECT S1.P_NO AS PAYMENT_NUMBER,S1.DATE AS DATE1,S2.DATE AS DATE2,DATEDIFF(S2.DATE,S1.DATE) AS DATE_DIFF FROM PAYMENT AS S1 CROSS JOIN PAYMENT AS S2 WHERE S1.P_NO=S2.P_NO AND S2.DATE>S1.DATE AND DATEDIFF(S2.DATE,S1.DATE)<=365) AS T3 INNER JOIN PAYMENT AS P1 ON T3.PAYMENT_NUMBER=P1.P_NO AND T3.DATE1=P1.DATE;
++----------------+------------+------------+-----------+---------+
+| PAYMENT_NUMBER | DATE1      | DATE2      | DATE_DIFF | AMOUNT  |
++----------------+------------+------------+-----------+---------+
+| p1             | 2011-01-09 | 2011-10-08 |       272 | 1038714 |
+| p1             | 2011-01-09 | 2011-10-11 |       275 | 1038714 |
+| p1             | 2011-01-09 | 2011-03-11 |        61 | 1038714 |
+| p1             | 2011-10-08 | 2011-10-11 |         3 |    5000 |
+| p1             | 2011-10-08 | 2012-04-11 |       186 |    5000 |
+| p2             | 2011-10-09 | 2012-03-11 |       154 |    5000 |
+| p1             | 2011-10-11 | 2012-04-11 |       183 |    5000 |
+| p1             | 2011-03-11 | 2011-10-08 |       211 |    5000 |
+| p1             | 2011-03-11 | 2011-10-11 |       214 |    5000 |
+| p1             | 2012-04-11 | 2012-10-25 |       197 |    8000 |
++----------------+------------+------------+-----------+---------+
+10 rows in set (0.00 sec)
+
+3)
+SELECT G.CITY,S.SALES FROM GEOGRAPHY AS G LEFT JOIN STORE_INFO AS S ON G.CITY=S.CITY WHERE G.REGION_NAME = 'WEST';
++-----------+-------+
+| CITY      | SALES |
++-----------+-------+
+| MUMBAI    |   125 |
+| AHMEDABAD |   112 |
+| PUNE      |  NULL |
+| NAGPUR    |  NULL |
++-----------+-------+
+4 rows in set (0.00 sec)
+
+4)
+SELECT E.EMPLOYEE_ID,E.NAME,T2.TOT_NUM FROM EMPLOYEE AS E INNER JOIN (SELECT EMPLOYEE_ID,TOT_NUM FROM (SELECT EMPLOYEE_ID,COUNT(*) AS TOT_NUM FROM ORDERS  GROUP BY EMPLOYEE_ID) AS T1 WHERE T1.TOT_NUM < 4) AS T2 ON E.EMPLOYEE_ID=T2.EMPLOYEE_ID WHERE E.NAME='WENG' OR E.NAME='ZHONG' ORDER BY E.EMPLOYEE_ID;
++-------------+-------+---------+
+| EMPLOYEE_ID | NAME  | TOT_NUM |
++-------------+-------+---------+
+|           2 | WENG  |       2 |
+|           3 | ZHONG |       1 |
++-------------+-------+---------+
+2 rows in set (0.00 sec)
+
+
+

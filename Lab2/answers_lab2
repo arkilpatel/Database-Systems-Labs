@@ -1,0 +1,118 @@
+1)
+mysql> SELECT CITY FROM BRANCH WHERE BRN_NAME IN (SELECT BR_NAME FROM ASSETS WHERE FACILITIES = 'fixeddeposit') ORDER BY CITY;
++---------------+
+| CITY          |
++---------------+
+| Eluru         |
+| Guntur        |
+| Hyderabad     |
+| Vijayanagaram |
+| Vijayawada    |
++---------------+
+5 rows in set (0.00 sec)
+
+2)
+mysql> SELECT C.NAME, T2.AMOUNT FROM CUSTOMER AS C INNER JOIN (SELECT B.CUST_ID,T1.AMOUNT FROM BORROWER AS B INNER JOIN (SELECT LN_NO,AMOUNT FROM LOAN) AS T1 ON B.LOAN_NO = T1.LN_NO) AS T2 ON C.C_ID = T2.CUST_ID ORDER BY T2.AMOUNT DESC;
++----------+---------+
+| NAME     | AMOUNT  |
++----------+---------+
+| sachitra | 8000000 |
+| sachitra | 8000000 |
+| haritha  | 6000000 |
+| sachitra | 6000000 |
+| shankar  | 4000000 |
+| saritha  | 4000000 |
+| himani   | 2000000 |
+| himani   |  500000 |
+| yogitha  |  500000 |
+| radhika  |  500000 |
+| ramu     |  500000 |
+| haritha  |  500000 |
+| ramu     |  500000 |
+| haritha  |  500000 |
++----------+---------+
+14 rows in set (0.38 sec)
+
+3)
+mysql> SELECT DISTINCT AC_NO FROM DEPOSITOR WHERE ACCESS_DT LIKE '%01' OR ACCESS_DT LIKE '%12' ORDER BY AC_NO LIMIT 2;
++-------------+
+| AC_NO       |
++-------------+
+| 20012023046 |
+| 20012023096 |
++-------------+
+2 rows in set, 2 warnings (0.39 sec)
+
+4)
+mysql> SELECT T3.NAME, T3.AMT FROM (SELECT T2.C_ID, T2.NAME, SUM(T2.AMOUNT) AS AMT FROM (SELECT T1.C_ID, T1.NAME, L.AMOUNT FROM LOAN AS L INNER JOIN (SELECT C.C_ID, C.NAME, B.LOAN_NO FROM CUSTOMER AS C INNER JOIN BORROWER AS B ON C.C_ID = B.CUST_ID) AS T1 ON L.LN_NO = T1.LOAN_NO) AS T2 GROUP BY T2.NAME,T2.C_ID ORDER BY T2.C_ID) AS T3;
++----------+----------+
+| NAME     | AMT      |
++----------+----------+
+| haritha  |  7000000 |
+| himani   |  2500000 |
+| shankar  |  4000000 |
+| saritha  |  4000000 |
+| sachitra | 22000000 |
+| yogitha  |   500000 |
+| radhika  |   500000 |
+| ramu     |  1000000 |
++----------+----------+
+8 rows in set (0.00 sec)
+
+5)
+mysql> SELECT NAME FROM CUSTOMER WHERE C_ID IN (SELECT CUST_ID FROM BORROWER WHERE LOAN_NO IN (SELECT L_NO FROM PAYMENT GROUP BY L_NO HAVING COUNT(L_NO)>1));
++---------+
+| NAME    |
++---------+
+| haritha |
+| himani  |
++---------+
+2 rows in set (0.10 sec)
+
+6)
+mysql> SELECT C.NAME, T4.BALANCE FROM CUSTOMER AS C INNER JOIN (SELECT T3.CUST_ID, A.BALANCE FROM ACCOUNT AS A INNER JOIN (SELECT T2.CUST_ID, T2.AC_NO FROM (SELECT T1.CUST_ID, T1.AC_NO, B.LOAN_NO FROM BORROWER AS B INNER JOIN (SELECT DISTINCT CUST_ID,AC_NO FROM DEPOSITOR WHERE ACCESS_DT < '2012-05-30') AS T1 ON T1.CUST_ID = B.CUST_ID) AS T2 GROUP BY CUST_ID,AC_NO HAVING COUNT(*)>1) AS T3 ON T3.AC_NO = A.ACC_NO) AS T4 ON T4.CUST_ID = C.C_ID;
++----------+---------+
+| NAME     | BALANCE |
++----------+---------+
+| himani   |    4000 |
+| sachitra |    6000 |
++----------+---------+
+2 rows in set (0.00 sec)
+
+7)
+mysql> SELECT C.NAME, T4.CITY FROM CUSTOMER AS C INNER JOIN (SELECT T3.CUST_ID, B.CITY FROM BRANCH AS B INNER JOIN (SELECT CUST_ID, BR_NAME FROM (SELECT T1.CUST_ID, A.BR_NAME FROM ACCOUNT AS A INNER JOIN (SELECT DISTINCT CUST_ID, AC_NO FROM DEPOSITOR) AS T1 ON T1.AC_NO = A.ACC_NO) AS T2 WHERE BR_NAME LIKE '%2' OR BR_NAME LIKE '%4' OR BR_NAME LIKE '%6' OR BR_NAME LIKE '%8') AS T3 ON T3.BR_NAME = B.BRN_NAME) AS T4 ON T4.CUST_ID = C.C_ID;
++---------+---------------+
+| NAME    | CITY          |
++---------+---------------+
+| saritha | Vijayanagaram |
++---------+---------------+
+1 row in set (0.00 sec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

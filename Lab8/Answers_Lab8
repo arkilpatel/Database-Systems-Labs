@@ -1,0 +1,29 @@
+1)
+mysql> CREATE TRIGGER BEFORE_CUSTOMER_UPDATE BEFORE UPDATE ON CUSTOMER FOR EACH ROW BEGIN INSERT INTO CUSTOMER_AUDIT SET CID = OLD.C_ID, NAME = OLD.NAME, STREET = OLD.STREET, CITY = OLD.CITY, GENDER = OLD.GENDER, CHANGEDAT = NOW(), ACTION = 'UPDATE'; END//
+Query OK, 0 rows affected (0.11 sec)
+
+2)
+mysql> CREATE TRIGGER AFTER_ACCOUNT_DELETE
+    -> AFTER DELETE ON ACCOUNT
+    -> FOR EACH ROW
+    -> BEGIN
+    -> INSERT INTO ACCOUNT_AUDIT
+    -> SET RECORD = CONCAT('UPDATE RECORD - ',OLD.ACC_NO,' - DELETED');
+    -> END//
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> DELETE FROM ACCOUNT WHERE BALANCE = 6000//
+Query OK, 2 rows affected (0.17 sec)
+
+mysql> SELECT * FROM ACCOUNT_AUDIT//
++-----+---------------------------------------+
+| SNO | RECORD                                |
++-----+---------------------------------------+
+|   1 | UPDATE RECORD - 20012023046 - DELETED |
+|   2 | UPDATE RECORD - 20012033046 - DELETED |
++-----+---------------------------------------+
+2 rows in set (0.01 sec)
+
+3)
+
+

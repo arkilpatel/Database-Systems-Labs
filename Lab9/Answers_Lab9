@@ -1,0 +1,107 @@
+1)
+mysql> CREATE TRIGGER BEFORE_UPDATE_STUMAST BEFORE UPDATE ON STUDENT_MAST FOR EACH ROW BEGIN INSERT INTO STU_INFO SET NAME = NEW.NAME, OLD_CLASS = OLD.ST_CLASS, NEW_CLASS = NEW.ST_CLASS; END//
+Query OK, 0 rows affected (0.08 sec)
+
+CREATE TRIGGER BEFORE_DELETE_STUMAST BEFORE DELETE ON STUDENT_MAST FOR EACH ROW BEGIN INSERT INTO STU_INFO SET NAME = OLD.NAME, OLD_CLASS = OLD.ST_CLASS, NEW_CLASS = -1; END//
+
+mysql> UPDATE STUDENT_MAST SET ST_CLASS = 12 WHERE STUDENT_ID = 1//
+Query OK, 1 row affected (0.08 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM STU_INFO//
++-------------+-----------+-----------+
+| NAME        | OLD_CLASS | NEW_CLASS |
++-------------+-----------+-----------+
+| Steven King |         8 |        12 |
++-------------+-----------+-----------+
+1 row in set (0.00 sec)
+
+mysql> DELETE FROM STUDENT_MAST WHERE STUDENT_ID = 1//
+Query OK, 1 row affected (0.03 sec)
+
+mysql> SELECT * FROM STU_INFO//
++-------------+-----------+-----------+
+| NAME        | OLD_CLASS | NEW_CLASS |
++-------------+-----------+-----------+
+| Steven King |         8 |        12 |
+| Steven King |        12 |        -1 |
++-------------+-----------+-----------+
+2 rows in set (0.00 sec)
+
+2)
+mysql> CREATE TRIGGER BEFORE_UPDATE_PPL_1 BEFORE UPDATE ON PPL FOR EACH ROW BEGIN DECLARE CN INT; DECLARE OLDF FLOAT; DECLARE NEWF FLOAT; DECLARE OLDI INT; DECLARE NEWI INT; SET OLDF = OLD.ACC_NO/100; SET OLDI = FLOOR(OLDF); SET NEWF = NEW.ACC_NO/100; SET NEWI = FLOOR(NEWF); SET CN = NEW.ACC_NO%10; IF NEWI>OLDI THEN SET NEW.CHANGES = 'Promoted'; END IF; IF NEWI<OLDI THEN SET NEW.CHANGES = 'Demoted'; END IF; SET NEW.PLACE = (SELECT CITY FROM CITY WHERE CNO = CN); SET NEW.POST = (SELECT POST FROM POST WHERE PNO = NEWI); END//
+Query OK, 0 rows affected (0.06 sec)
+
+CREATE TRIGGER BEFORE_UPDATE_PPL_2 BEFORE UPDATE ON PPL FOR EACH ROW BEGIN DECLARE OLDPF FLOAT; DECLARE NEWPF FLOAT; DECLARE OLDPI INT; DECLARE NEWPI INT; DECLARE OLDC INT; DECLARE NEWC INT; SET OLDPF = OLD.ACC_NO/100; SET OLDPI = FLOOR(OLDPF); SET NEWPF = NEW.ACC_NO/100; SET NEWPI = FLOOR(NEWPF); SET OLDC = OLD.ACC_NO%10; SET NEWC = NEW.ACC_NO%10; CASE WHEN NEWPI>OLDPI AND NEWC<OLDC  THEN  INSERT INTO AUDIT SET NAME=NEW.NAME,OLD_ACC_NO = OLD.ACC_NO,NEW_ACC_NO=NEW.ACC_NO, OLD_POST = (SELECT POST FROM POST WHERE PNO = OLDPI), NEW_POST = (SELECT POST FROM POST WHERE PNO = NEWPI), REMARKS = 'PHODA'; WHEN NEWPI>OLDPI AND NEWC=OLDC THEN INSERT INTO AUDIT SET NAME=NEW.NAME,OLD_ACC_NO = OLD.ACC_NO,NEW_ACC_NO=NEW.ACC_NO, OLD_POST = (SELECT POST FROM POST WHERE PNO = OLDPI), NEW_POST = (SELECT POST FROM POST WHERE PNO = NEWPI), REMARKS = 'SAHI'; 
+
+3)
+mysql> CREATE PROCEDURE PATTERN(IN N INT) BEGIN DECLARE I,NUM,PREV INT; DECLARE STR VARCHAR(100); SET STR = ''; SET I = 0; WHILE I<N DO IF(I%2 = 1) THEN SET NUM = PREV+1; ELSE SET NUM = POWER(2,I/2); SET PREV = NUM; END IF; SET STR = CONCAT(STR,NUM,', '); SET I = I+1; END WHILE; SELECT STR; END//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL PATTERN(8)//
++--------------------------+
+| STR                      |
++--------------------------+
+| 1, 2, 2, 3, 4, 5, 8, 9,  |
++--------------------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL PATTERN(20)//
++--------------------------------------------------------------------------------+
+| STR                                                                            |
++--------------------------------------------------------------------------------+
+| 1, 2, 2, 3, 4, 5, 8, 9, 16, 17, 32, 33, 64, 65, 128, 129, 256, 257, 512, 513,  |
++--------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SORT:::
+
+CREATE PROCEDURE BUBBLE() BEGIN DECLARE I,J,MAX,N,NO INT; DECLARE STR VARCHAR(50); SET I=0; SET N=6; SET STR=''; WHILE I<N DO SET J=0; SET MAX=0; WHILE J<N DO SELECT NUM INTO NO FROM NUMBERS LIMIT J,1; IF MAX<NO THEN SET MAX = NO; END IF; SET J=J+1; END WHILE; SET STR = CONCAT(MAX,', ',STR); DELETE FROM NUMBERS WHERE NUM = MAX; SET I = I+1; END WHILE; SELECT STR AS SORTED_STRING; END//   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

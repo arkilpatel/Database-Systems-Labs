@@ -1,0 +1,208 @@
+1)
+mysql> CREATE PROCEDURE SINE (IN X FLOAT, IN N INT, OUT SIN FLOAT) BEGIN DECLARE I INT; SET I=1; SET SIN = 0; WHILE I<=N DO CALL FACT(2*I-1,@FAC); SET SIN = SIN + (POWER(-1,I+1)*POWER(X,2*I-1))/@FAC; SET I = I+1; END WHILE; END//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL SINE(5,3,@ANS)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @ANS//
++--------------------+
+| @ANS               |
++--------------------+
+| 10.208333969116211 |
++--------------------+
+1 row in set (0.00 sec)
+
+mysql> CREATE PROCEDURE COSINE (IN X FLOAT, IN N INT, OUT COS FLOAT) BEGIN DECLARE I INT; SET I=1; SET COS = 0; WHILE I<=N DO CALL FACT(2*I-2,@FAC2); SET COS = COS + (POWER(-1,I+1)*POWER(X,2*I-2))/@FAC2; SET I = I+1; END WHILE; END//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL COSINE(5,3,@ANS)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @ANS//                                                          +--------------------+
+| @ANS               |
++--------------------+
+| 14.541666984558105 |
++--------------------+
+1 row in set (0.00 sec)
+
+mysql> CREATE PROCEDURE LOG (IN X FLOAT, IN N INT, OUT LN FLOAT) BEGIN DECLARE I INT; SET I=1; SET LN = 0; WHILE I<=N DO SET LN = LN + (POWER(-1,I+1)*POWER(X,I))/I; SET I = I+1; END WHILE; END//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL LOG(5,3,@ANS)//                                                Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @ANS//                                                          +-------------------+
+| @ANS              |
++-------------------+
+| 34.16666793823242 |
++-------------------+
+1 row in set (0.00 sec)
+
+mysql> CREATE PROCEDURE LAB7Q1 (IN X FLOAT, IN N INT, OUT RES FLOAT) BEGIN CALL SINE(X,N,@SIN); CALL COSINE(X,N,@COS); CALL LOG(X,N,@LN); SET RES = (@SIN/@COS) + @LN; END//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL LAB7Q1 (5,3,@ANS)//                                               Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @ANS//
++--------------------+
+| @ANS               |
++--------------------+
+| 34.868675231933594 |
++--------------------+
+1 row in set (0.00 sec)
+
+2)
+mysql> CREATE PROCEDURE EXP(IN X FLOAT,OUT E FLOAT) BEGIN DECLARE I INT; SET I = 1; SET E = 0; WHILE I<=5 DO CALL FACT(I-1,@F); SET E = E + POWER(X,I-1)/@F; SET I = I + 1; END WHILE; END//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL EXP(5,@EX)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @EX//
++--------+
+| @EX    |
++--------+
+| 65.375 |
++--------+
+1 row in set (0.00 sec)
+
+mysql> CREATE PROCEDURE LAB7Q2 (IN C1 FLOAT, IN C2 FLOAT, IN C3 FLOAT, IN C4 FLOAT, IN N INT, OUT AN FLOAT) BEGIN CASE N WHEN 1 THEN SET AN = 0; WHEN 2 THEN SET AN = 0; WHEN 3 THEN SET AN = 1; WHEN 4 THEN SET AN = 1; ELSE CALL EXP(C1,@EC1); CALL EXP(C2,@EC2); CALL EXP(C3,@EC3); CALL EXP(C4,@EC4); CALL LAB7Q2(C1,C2,C3,C4,N-1,@AN1); CALL LAB7Q2(C1,C2,C3,C4,N-2,@AN2); CALL LAB7Q2(C1,C2,C3,C4,N-3,@AN3); CALL LAB7Q2(C1,C2,C3,C4,N-4,@AN4); SET AN = @EC1*@AN1 + @EC2*@AN2 + @EC3*@AN3 + @EC4*@AN4; END CASE; END//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL LAB7Q2(1,1,1,1,1,@ANS)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @ANS//
++------+
+| @ANS |
++------+
+|    0 |
++------+
+1 row in set (0.01 sec)
+
+mysql> CALL LAB7Q2(1,1,1,1,2,@ANS)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @ANS//
++------+
+| @ANS |
++------+
+|    0 |
++------+
+1 row in set (0.00 sec)
+
+mysql> CALL LAB7Q2(1,1,1,1,3,@ANS)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @ANS//
++------+
+| @ANS |
++------+
+|    1 |
++------+
+1 row in set (0.00 sec)
+
+mysql> CALL LAB7Q2(1,1,1,1,4,@ANS)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @ANS//
++------+
+| @ANS |
++------+
+|    1 |
++------+
+1 row in set (0.00 sec)
+
+mysql> SET max_sp_recursion_depth = 100//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL LAB7Q2(1,1,1,1,5,@ANS)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT @ANS//
++--------------------+
+| @ANS               |
++--------------------+
+| 5.4166669845581055 |
++--------------------+
+1 row in set (0.00 sec)
+
+3)
+mysql> CREATE PROCEDURE LAB7Q3 () BEGIN DECLARE I INT; SET I = 0; WHILE I<10 DO SELECT CASE WHEN LOCATE('car',T2.L_NO) = 1 THEN 'CAR LOAN' WHEN LOCATE('hou',T2.L_NO) = 1 THEN 'HOUSE LOAN' WHEN LOCATE('per',T2.L_NO) = 1 THEN 'PERSONAL LOAN' END AS TYPE, B.CITY AS CITY FROM BRANCH AS B INNER JOIN (SELECT T1.L_NO,L.BR_NAME FROM LOAN AS L INNER JOIN (SELECT L_NO FROM PAYMENT LIMIT I,1) AS T1 ON T1.L_NO = L.LN_NO) AS T2 ON T2.BR_NAME = B.BRN_NAME; SET I = I+1; END WHILE; END//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL LAB7Q3()//
++----------+---------------+
+| TYPE     | CITY          |
++----------+---------------+
+| CAR LOAN | Vijayanagaram |
++----------+---------------+
+1 row in set (0.00 sec)
+
++----------+---------------+
+| TYPE     | CITY          |
++----------+---------------+
+| CAR LOAN | Vijayanagaram |
++----------+---------------+
+1 row in set (0.00 sec)
+
++----------+---------------+
+| TYPE     | CITY          |
++----------+---------------+
+| CAR LOAN | Vijayanagaram |
++----------+---------------+
+1 row in set (0.00 sec)
+
++----------+------------+
+| TYPE     | CITY       |
++----------+------------+
+| CAR LOAN | Srikakulam |
++----------+------------+
+1 row in set (0.00 sec)
+
++------------+------------+
+| TYPE       | CITY       |
++------------+------------+
+| HOUSE LOAN | Vijayawada |
++------------+------------+
+1 row in set (0.00 sec)
+
++------------+------------+
+| TYPE       | CITY       |
++------------+------------+
+| HOUSE LOAN | Vijayawada |
++------------+------------+
+1 row in set (0.00 sec)
+
++------------+------------+
+| TYPE       | CITY       |
++------------+------------+
+| HOUSE LOAN | Vijayawada |
++------------+------------+
+1 row in set (0.00 sec)
+
++---------------+-------+
+| TYPE          | CITY  |
++---------------+-------+
+| PERSONAL LOAN | Eluru |
++---------------+-------+
+1 row in set (0.00 sec)
+
++---------------+-------+
+| TYPE          | CITY  |
++---------------+-------+
+| PERSONAL LOAN | Eluru |
++---------------+-------+
+1 row in set (0.00 sec)
+
++---------------+----------+
+| TYPE          | CITY     |
++---------------+----------+
+| PERSONAL LOAN | Kakinada |
++---------------+----------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+
+

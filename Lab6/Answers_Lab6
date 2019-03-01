@@ -1,0 +1,74 @@
+1)
+CREATE PROCEDURE LAB6Q1 (IN X INT) BEGIN SELECT C.NAME AS NAMES FROM CUSTOMER AS C INNER JOIN (SELECT B.CUST_ID FROM BORROWER AS B INNER JOIN (SELECT LN_NO FROM LOAN WHERE AMOUNT>X AND LN_NO LIKE 'per%') AS T1 ON T1.LN_NO = B.LOAN_NO) AS T2 ON T2.CUST_ID = C.C_ID; END//
+
+mysql> CALL LAB6Q1(500000)//
++----------+
+| NAMES    |
++----------+
+| haritha  |
+| sachitra |
++----------+
+2 rows in set (0.00 sec)
+
+2)
+mysql> CREATE PROCEDURE LAB6Q2 () BEGIN DECLARE X INT; DECLARE RES INT; SET X = (SELECT AMOUNT FROM PAYMENT WHERE L_NO LIKE 'hou%' ORDER BY AMOUNT DESC LIMIT 1); SET X = X/1000; CALL FACT(X,@X); CALL FACT(2*X,@2X); SET RES = @2X/(@X*@X); SELECT RES; END//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL LAB6Q2()//
++------+
+| RES  |
++------+
+|  252 |
++------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+3)
+mysql> CREATE PROCEDURE LAB6Q3 () BEGIN SELECT COUNT(*) AS NUM FROM ACCOUNT WHERE BR_NAME IN (SELECT BR_NAME FROM ASSETS WHERE FACILITIES = 'mobilebanking'); END//
+
+mysql> CALL LAB6Q3()//
++-----+
+| NUM |
++-----+
+|   5 |
++-----+
+1 row in set (0.00 sec)
+
+4)
+mysql> CREATE PROCEDURE LAB6Q4 () BEGIN SELECT MIN(SUM) AS NUM FROM (SELECT SUM(AMOUNT) AS SUM FROM LOAN GROUP BY BR_NAME ORDER BY SUM(AMOUNT) DESC LIMIT 5) AS T1; END//
+
+mysql> CALL LAB6Q4()//
++---------+
+| NUM     |
++---------+
+| 6000000 |
++---------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

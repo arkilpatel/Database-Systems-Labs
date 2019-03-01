@@ -1,0 +1,45 @@
+1)
+
+2)
+mysql> update CUSTOMER_COPY SET STREET = 'NH17B' WHERE NAME IN (SELECT C.NAME FROM CUSTOMER AS C INNER JOIN (SELECT B.CUST_ID FROM BORROWER AS B INNER JOIN (SELECT L_NO FROM PAYMENT GROUP BY L_NO HAVING SUM(AMOUNT)>10000) AS T1 ON T1.L_NO = B.LOAN_NO) AS T2 ON T2.CUST_ID = C.C_ID);
+Query OK, 2 rows affected (0.36 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql> SELECT * FROM CUSTOMER_COPY;
++------+----------+------------+--------------+--------+
+| C_ID | NAME     | STREET     | CITY         | GENDER |
++------+----------+------------+--------------+--------+
+| c1   | haritha  | NH17B      | machlipatnam | f      |
+| c2   | himani   | NH17B      | machlipatnam | f      |
+| c3   | shankar  | kadamb
+a   | eluru        | m      |
+| c4   | saritha  | kadamba    | eluru        | f      |
+| c5   | sachitra | saraswathi | nandigama    | f      |
+| c6   | yogitha  | ka
+veri    | hyderabad    | f      |
+| c7   | radhika  | kaveri     | hyderabad    | f      |
+| c8   | ramu     | azad       | Vijayawada   | m      |
++------+----------+------------+--------------+--------+
+8 rows in set (0.00 sec)
+
+3)
+mysql> SELECT P.P_NO,P.L_NO, P.AMOUNT FROM PAYMENT AS P INNER JOIN (SELECT DISTINCT B.LOAN_NO FROM BORROWER AS B INNER JOIN (SELECT C.C_ID FROM CUSTOMER AS C INNER JOIN (SELECT B.CITY FROM BRANCH AS B INNER JOIN (SELECT DISTINCT BR_NAME FROM ASSETS WHERE FACILITIES = 'mobilebanking' OR FACILITIES = 'netbanking') AS T1 ON B.BRN_NAME = T1.BR_NAME) AS T2 ON C.CITY = T2.CITY) AS T3 ON B.CUST_ID = T3.C_ID) AS T4 ON P.L_NO = T4.LOAN_NO;
++------+------+--------+
+| P_NO | L_NO | AMOUNT |
++------+------+--------+
+| p1   | hou2 |   5000 |
++------+------+--------+
+1 row in set (0.01 sec)
+
+
+4)
+mysql> SELECT DISTINCT T3.NAME,T3.LOAN_NO,(T3.L_AMT-P.AMOUNT) AS AMT_LEFT FROM PAYMENT AS P INNER JOIN (SELECT T2.NAME, T2.LOAN_NO, L.AMOUNT AS L_AMT FROM LOAN AS L INNER JOIN (SELECT T1.NAME, B.LOAN_NO FROM BORROWER AS B INNER JOIN (SELECT C_ID,NAME FROM CUSTOMER WHERE GENDER = 'f') AS T1 ON T1.C_ID = B.CUST_ID WHERE B.LOAN_NO LIKE 'hou%') AS T2 ON T2.LOAN_NO = L.LN_NO) AS T3 ON T3.LOAN_NO = P.L_NO;
++---------+---------+----------+
+| NAME    | LOAN_NO | AMT_LEFT |
++---------+---------+----------+
+| himani  | hou1    |  1995000 |
+| saritha | hou2    |  3995000 |
++---------+---------+----------+
+2 rows in set (0.00 sec)
+
+

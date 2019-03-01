@@ -1,0 +1,157 @@
+mysql> select * from ACCOUNT;
++-------------+---------+---------+
+| ACC_NO      | BALANCE | BR_NAME |
++-------------+---------+---------+
+| 20012023046 |    6000 | zone6   |
+| 20012023047 |    9000 | zone7   |
+| 20012023094 |    4000 | zone1   |
+| 20012023095 |    4000 | zone1   |
+| 20012023096 |    5000 | zone1   |
+| 20012023097 |   10000 | zone2   |
+| 20012023098 |   10000 | zone4   |
+| 20012033046 |    6000 | zone3   |
+| 20112023046 |    8000 | zone8   |
+| 20112033046 |    7000 | zone9   |
++-------------+---------+---------+
+10 rows in set (0.00 sec)
+
+mysql> select * from ASSETS;
++------------+---------------+
+| BR_NAME    | FACILITIES    |
++------------+---------------+
+| headoffice | fixeddeposit  |
+| headoffice | locker        |
+| headoffice | mobilebanking |
+| headoffice | netbanking    |
+| zone1      | fixeddeposit  |
+| zone1      | mobilebanking |
+| zone1      | netbanking    |
+| zone2      | fixeddeposit  |
+| zone2      | netbanking    |
+| zone3      | fixeddeposit  |
+| zone3      | locker        |
+| zone3      | netbanking    |
+| zone4      | netbanking    |
+| zone5      | locker        |
+| zone6      | fixeddeposit  |
+| zone6      | locker        |
+| zone7      | locker        |
+| zone7      | mobilebanking |
+| zone8      | locker        |
+| zone8      | mobilebanking |
+| zone9      | locker        |
++------------+---------------+
+21 rows in set (0.00 sec)
+
+mysql> select * from BORROWER;
++---------+---------+
+| CUST_ID | LOAN_NO |
++---------+---------+
+| c1      | car1    |
+| c2      | car2    |
+| c2      | hou1    |
+| c3      | hou2    |
+| c4      | hou2    |
+| c5      | hou3    |
+| c5      | hou4    |
+| c6      | hou5    |
+| c1      | hou5    |
+| c7      | hou6    |
+| c8      | hou6    |
+| c8      | car4    |
+| c1      | per2    |
+| c5      | per3    |
++---------+---------+
+14 rows in set (0.00 sec)
+
+mysql> select * from BRANCH;
++------------+---------------+
+| BRN_NAME   | CITY          |
++------------+---------------+
+| headoffice | Hyderabad     |
+| zone1      | Vijayawada    |
+| zone2      | Guntur        |
+| zone3      | Eluru         |
+| zone4      | Kakinada      |
+| zone5      | Vizag         |
+| zone6      | Vijayanagaram |
+| zone7      | Srikakulam    |
+| zone8      | Tirupathi     |
+| zone9      | Chittor       |
++------------+---------------+
+10 rows in set (0.00 sec)
+
+mysql> select * from CUSTOMER;
++------+----------+------------+--------------+--------+
+| C_ID | NAME     | STREET     | CITY         | GENDER |
++------+----------+------------+--------------+--------+
+| c1   | haritha  | nalanda    | machlipatnam | f      |
+| c2   | himani   | nalanda    | machlipatnam | f      |
+| c3   | shankar  | kadamba    | eluru        | m      |
+| c4   | saritha  | kadamba    | eluru        | f      |
+| c5   | sachitra | saraswathi | nandigama    | f      |
+| c6   | yogitha  | kaveri     | hyderabad    | f      |
+| c7   | radhika  | kaveri     | hyderabad    | f      |
+| c8   | ramu     | azad       | Vijayawada   | m      |
++------+----------+------------+--------------+--------+
+8 rows in set (0.00 sec)
+
+mysql> select * from DEPOSITOR;
++---------+-------------+------------+
+| CUST_ID | AC_NO       | ACCESS_DT  |
++---------+-------------+------------+
+| c1      | 20012023094 | 2012-05-30 |
+| c1      | 20012023094 | 2012-05-30 |
+| c1      | 20012023094 | 2012-05-30 |
+| c1      | 20012023094 | 2012-05-30 |
+| c2      | 20012023095 | 2012-05-29 |
+| c2      | 20012023095 | 2012-05-29 |
+| c2      | 20012023095 | 2012-05-29 |
+| c3      | 20012023096 | 2012-05-12 |
+| c3      | 20012023096 | 2012-05-12 |
+| c3      | 20012023096 | 2012-05-12 |
+| c4      | 20012023046 | 2012-03-12 |
+| c4      | 20012023046 | 2012-03-12 |
+| c5      | 20012033046 | 2012-01-01 |
+| c6      | 20112033046 | 2012-01-01 |
++---------+-------------+------------+
+14 rows in set (0.00 sec)
+
+mysql> select * from LOAN;
++-------+---------+---------+
+| LN_NO | AMOUNT  | BR_NAME |
++-------+---------+---------+
+| car1  |  500000 | zone6   |
+| car2  |  500000 | zone7   |
+| car3  |  500000 | zone6   |
+| car4  |  500000 | zone8   |
+| hou1  | 2000000 | zone1   |
+| hou2  | 4000000 | zone1   |
+| hou3  | 8000000 | zone5   |
+| hou4  | 8000000 | zone6   |
+| hou5  |  500000 | zone2   |
+| hou6  |  500000 | zone8   |
+| per1  | 6000000 | zone3   |
+| per2  | 6000000 | zone4   |
+| per3  | 6000000 | zone5   |
+| per4  |  500000 | zone2   |
++-------+---------+---------+
+14 rows in set (0.00 sec)
+
+mysql> select * from PAYMENT;
++------+------+------------+---------+
+| P_NO | L_NO | DATE       | AMOUNT  |
++------+------+------------+---------+
+| p1   | car1 | 2011-01-09 | 1038714 |
+| p2   | car1 | 2000-01-09 | 1038714 |
+| p3   | car1 | 2011-01-01 |    3000 |
+| p1   | car2 | 2012-10-25 | 1038714 |
+| p1   | hou1 | 2011-10-08 |    5000 |
+| p2   | hou1 | 2011-10-09 |    5000 |
+| p1   | hou2 | 2011-10-11 |    5000 |
+| p1   | per1 | 2011-03-11 |    5000 |
+| p2   | per1 | 2012-03-11 |    5000 |
+| p1   | per2 | 2012-04-11 |    8000 |
++------+------+------------+---------+
+10 rows in set (0.00 sec)
+
